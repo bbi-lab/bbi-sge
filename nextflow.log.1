@@ -1,0 +1,97 @@
+Feb-10 14:21:59.288 [main] DEBUG nextflow.cli.Launcher - $> nextflow run executor_test.nf -c params.config
+Feb-10 14:21:59.475 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 21.10.6
+Feb-10 14:21:59.533 [main] INFO  nextflow.cli.CmdRun - Launching `executor_test.nf` [furious_mcclintock] - revision: dfbf904e8f
+Feb-10 14:21:59.567 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /net/bbi/vol1/home/jongs2/nextflow_sge/nextflow.config
+Feb-10 14:21:59.572 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /net/bbi/vol1/home/jongs2/nextflow_sge/params.config
+Feb-10 14:21:59.573 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /net/bbi/vol1/home/jongs2/nextflow_sge/nextflow.config
+Feb-10 14:21:59.573 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /net/bbi/vol1/home/jongs2/nextflow_sge/params.config
+Feb-10 14:21:59.634 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Feb-10 14:22:01.082 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Feb-10 14:22:01.298 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; plugins-dir=/net/bbi/vol1/home/jongs2/.nextflow/plugins
+Feb-10 14:22:01.306 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Feb-10 14:22:01.355 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Feb-10 14:22:01.356 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Feb-10 14:22:01.362 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Feb-10 14:22:01.387 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Feb-10 14:22:01.497 [main] DEBUG nextflow.Session - Session uuid: 601d920e-b0c3-4bb8-bcbc-4e68f2e0c6d3
+Feb-10 14:22:01.498 [main] DEBUG nextflow.Session - Run name: furious_mcclintock
+Feb-10 14:22:01.499 [main] DEBUG nextflow.Session - Executor pool size: 2
+Feb-10 14:22:01.562 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 21.10.6 build 5660
+  Created: 21-12-2021 16:55 UTC (08:55 PDT)
+  System: Linux 3.10.0-1127.8.2.el7.x86_64
+  Runtime: Groovy 3.0.9 on OpenJDK 64-Bit Server VM 17.0.1+12
+  Encoding: UTF-8 (UTF-8)
+  Process: 5008@sage034.grid.gs.washington.edu [10.110.0.34]
+  CPUs: 2 - Mem: 20 GB (19.9 GB) - Swap: 8 GB (5.8 GB)
+Feb-10 14:22:01.661 [main] DEBUG nextflow.Session - Work-dir: /net/bbi/vol1/home/jongs2/nextflow_sge/work [nfs]
+Feb-10 14:22:01.694 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Feb-10 14:22:01.713 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Feb-10 14:22:01.807 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 3; maxThreads: 1000
+Feb-10 14:22:01.997 [main] DEBUG nextflow.Session - Session start invoked
+Feb-10 14:22:03.074 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Feb-10 14:22:03.289 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withName:bcl2fastq` matches process bcl2fastq
+Feb-10 14:22:03.337 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: sge
+Feb-10 14:22:03.338 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'sge'
+Feb-10 14:22:03.356 [main] DEBUG nextflow.executor.Executor - [warm up] executor > sge
+Feb-10 14:22:03.367 [main] DEBUG n.processor.TaskPollingMonitor - Creating task monitor for executor 'sge' > capacity: 100; pollInterval: 5s; dumpInterval: 5m 
+Feb-10 14:22:03.380 [main] DEBUG n.executor.AbstractGridExecutor - Creating executor 'sge' > queue-stat-interval: 1m
+Feb-10 14:22:03.410 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 3; maxThreads: 1000
+Feb-10 14:22:03.542 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withName:fastqc` matches process fastqc
+Feb-10 14:22:03.546 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: sge
+Feb-10 14:22:03.547 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'sge'
+Feb-10 14:22:03.565 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: fastqc, bcl2fastq
+Feb-10 14:22:03.586 [main] WARN  nextflow.Session - There's no process matching config selector: seqprep
+Feb-10 14:22:03.590 [main] WARN  nextflow.Session - There's no process matching config selector: trimming
+Feb-10 14:22:03.590 [main] WARN  nextflow.Session - There's no process matching config selector: rnaseq
+Feb-10 14:22:03.590 [main] WARN  nextflow.Session - There's no process matching config selector: needle
+Feb-10 14:22:03.590 [main] WARN  nextflow.Session - There's no process matching config selector: cigar
+Feb-10 14:22:03.590 [main] WARN  nextflow.Session - There's no process matching config selector: sam_to_edits
+Feb-10 14:22:03.590 [main] WARN  nextflow.Session - There's no process matching config selector: annotated_variants
+Feb-10 14:22:03.591 [main] DEBUG nextflow.Session - Ignite dataflow network (2)
+Feb-10 14:22:03.591 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > bcl2fastq
+Feb-10 14:22:03.592 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > fastqc
+Feb-10 14:22:03.604 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Feb-10 14:22:03.604 [main] DEBUG nextflow.Session - Session await
+Feb-10 14:22:04.417 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - Failed to submit process bcl2fastq > exit: 1; workDir: /net/bbi/vol1/home/jongs2/nextflow_sge/work/db/7e50294ee54186359481edf9e765d3
+Unable to run job: "job" denied: use parallel environments instead of requesting slots explicitly.
+Exiting.
+
+
+Feb-10 14:22:04.446 [Task submitter] DEBUG nextflow.processor.TaskRun - Unable to dump error of process 'null' -- Cause: java.nio.file.NoSuchFileException: /net/bbi/vol1/home/jongs2/nextflow_sge/work/db/7e50294ee54186359481edf9e765d3/.command.log
+Feb-10 14:22:04.448 [Task submitter] ERROR nextflow.processor.TaskProcessor - Error executing process > 'bcl2fastq'
+
+Caused by:
+  Failed to submit process to grid scheduler for execution
+
+Command executed:
+
+  qsub -terse .command.run
+
+Command exit status:
+  1
+
+Command output:
+  Unable to run job: "job" denied: use parallel environments instead of requesting slots explicitly.
+  Exiting.
+
+Work dir:
+  /net/bbi/vol1/home/jongs2/nextflow_sge/work/db/7e50294ee54186359481edf9e765d3
+
+Tip: when you have fixed the problem you can continue the execution adding the option `-resume` to the run command line
+Feb-10 14:22:04.453 [Task submitter] DEBUG nextflow.Session - Session aborted -- Cause: Error submitting process 'bcl2fastq' for execution
+Feb-10 14:22:04.482 [Task submitter] DEBUG nextflow.Session - The following nodes are still active:
+[process] fastqc
+  status=ACTIVE
+  port 0: (value) OPEN  ; channel: bcl2
+  port 1: (cntrl) -     ; channel: $
+
+Feb-10 14:22:04.485 [Task submitter] INFO  nextflow.script.BaseScript - Something when wrong, look up the log
+Feb-10 14:22:04.487 [main] DEBUG nextflow.Session - Session await > all process finished
+Feb-10 14:22:04.487 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Feb-10 14:22:04.489 [main] INFO  nextflow.script.BaseScript - bbi-sge pipeline completed at: 2022-02-10T14:22:04.488162478-08:00
+Feb-10 14:22:04.491 [main] INFO  nextflow.script.BaseScript - 2.8s
+Feb-10 14:22:04.491 [main] INFO  nextflow.script.BaseScript - Execution status: failed
+Feb-10 14:22:04.497 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=1; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=0; peakCpus=0; peakMemory=0; ]
+Feb-10 14:22:04.690 [main] DEBUG nextflow.CacheDB - Closing CacheDB done
+Feb-10 14:22:04.729 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
