@@ -33,20 +33,22 @@
 After upper steps, you can run the pipeline by 3 different ways
 
     1. Running directly in grid-head 
-        nextflow run bbi-sge -c <config name>.config 
+        ./nextflow run main.nf -c <config name>.config 
 
     2. Runnign in qlogin
         qlogin -l mfree='16G' ; put how much memory you want
-        nextflow run bbi-sge -c <config name>.config 
+        ./nextflow run main.nf -c <config name>.config 
 
     3. Running in qsub
-        qsub nextflow run bbi-sge (working?)
+        qsub ./nextflow run main.nf (working?)
 
     
 ## Requirements
 Nextflow runs in its own work directory and its sub directories, and it automatically generate the .log files.  
 To track them easily, it is highly recommended to make own nextflow directory and then pull the git-hub respitory inside of that directory.
-
+    https://github.com/bbi-lab/bbi-sge.git
+  
+    try to use git clone instead of below
     curl -fsSL https://get.nextflow.io | bash
     ./nextflow pull bbi/bbi-sge
 
