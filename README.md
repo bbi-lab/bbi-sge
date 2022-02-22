@@ -46,7 +46,8 @@ After upper steps, you can run the pipeline by 3 different ways
 ## Requirements
 Nextflow runs in its own work directory and its sub directories, and it automatically generate the .log files.  
 To track them easily, it is highly recommended to make own nextflow directory and then pull the git-hub respitory inside of that directory.
-    https://github.com/bbi-lab/bbi-sge.git
+    
+    git clone https://github.com/bbi-lab/bbi-sge.git
   
     try to use git clone instead of below
     curl -fsSL https://get.nextflow.io | bash
