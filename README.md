@@ -49,7 +49,6 @@ To track them easily, it is highly recommended to make own nextflow directory an
     
     git clone https://github.com/bbi-lab/bbi-sge.git
   
-    try to use git clone instead of below
     curl -fsSL https://get.nextflow.io | bash
     ./nextflow pull bbi/bbi-sge
 
