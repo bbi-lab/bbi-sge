@@ -44,10 +44,10 @@ To avoid this, it is highly recommneded to load following modules before running
     module load java/1.8.0 fastqc/0.11.7 EMBOSS/6.6.0
 
 General modules 
-    You are required to load following modules first to load any other modules in the cluster.   
+You are required to load following modules first to load any other modules in the cluster.
     module load modules modules-init modules-gs  
     
-    You are required to load following moduels to use tmux session.  
+You are required to load following moduels to use tmux session.  
     module load libevent/2.1.8 tmux/2.8
 
 ## Installation
