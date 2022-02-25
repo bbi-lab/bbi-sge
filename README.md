@@ -35,9 +35,9 @@ Detail description of each steps
 
 ## Required Modules
 
-First things that you should do is loading modules mannually. 
-All the required modules except tmux are loaded within the nextflow.config and main.nf.
-However, in somecases, it would show the error message related to this.  
+First things that you should do is loading modules mannually.  
+All the required modules except tmux are loaded within the nextflow.config and main.nf.  
+However, in somecases, it would show the error message related to this.   
 
 To avoid this, it is highly recommneded to load following modules before running nextflow  
     module load gmp/6.1.2 mpfr/4.0.1 mpc/1.1.0 gcc/8.1.0 bcl2fastq/2.20 
