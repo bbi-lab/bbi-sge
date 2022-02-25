@@ -33,7 +33,7 @@ read_threshold = .000002
 alignment_score_threshold = 300
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # amplicon
-fasta_dir = "/net/bbi/vol1/home/jongs2/SGE/fasta"
+fasta_dir = "/net/bbi/vol1/nobackup/SGE/fasta"
 amplicon_list = sys.argv[2].split('+')
 ref_seqs = {}
 for amplicon in amplicon_list:
@@ -45,7 +45,7 @@ for amplicon in amplicon_list:
 
 # edits
 edits_per_amp = {}
-editing_info = open('/net/bbi/vol1/home/jongs2/SGE/BRCA1/BRCA1_editing_data.txt', 'r')
+editing_info = open('/net/bbi/vol1/nobackup/SGE/BRCA1/BRCA1_editing_data.txt', 'r')
 editing_info_header = editing_info.readline()
 for line in editing_info:
 	edits = line.strip().split()

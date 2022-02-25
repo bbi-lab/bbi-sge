@@ -26,24 +26,34 @@ if (params.help) {
     '''
     -----------------------------------------------------------------------------------------------
     Required parameters
-        params.out_dir             - output file dir
-        params.seq_dir             - sequencing reading dir
-        params.sample_sheet        - sample sheet dir
+    These parameters are required to run the pipeline
+        params.out_dir             - the path directory of your output files
+        params.seq_dir             - the path diretory of your sequence files
+        params.sample_sheet        - the path of your sample sheet (.csv)
         params.seq_type            - "NS" for Nextseq / "M" for Miseq
-        params.rna                 - check box for rna existed or not (True = existed; False = not existed)
-        params.ref_dir             -
-        params.cigar_comparison    -
+        params.rna                 - check box for rna existed or not (default: not_exist; change to whatever you want it)
+        params.enrich              - check box for enrich step or entire step (default: not_enrich; change to whatever you want it)
+        params.ref_dir             - the mother path directory of your reference sequences for cigar, amplicon, cadd, clinvar and others
+
+        params.cigar               - 
         params.amplincon_list      -
-        params.experiment_grouping -
-        params.prefix              -
+        params.experiment_group    -
+        
     -----------------------------------------------------------------------------------------------
-    Optional parameters
-        Unless you change the parameters in specific in here, it will take the parameters that were setup in main.nf
-        -------------------------------------------------------------------------------------------
-        seqprep
-            
-        -------------------------------------------------------------------------------------------
-        needle
+    DO NOT NEED TO CARE ABOUT THESE FOR NOW
+    -----------------------------------------------------------------------------------------------
+        params.name - integrated with sample name of sample sheet or after bcl2fastq for other variable names (cigar, amplicon, etc.)
+    -----------------------------------------------------------------------------------------------
+    cadd 
+        params.chromosome   -
+        params.basepairs    - number of base pairs you are searching for (ex.50, 120, 200, 400; wheatever)
+        params.starting     - staring base pair position
+        params.ending       - ending base pair position
+        
+        *basepar is
+
+    clinvar
+
     -----------------------------------------------------------------------------------------------
     '''
     exit 1
@@ -51,25 +61,20 @@ if (params.help) {
 
 /*
 process sample_sheet_check {
-    publishDir path: "${params.out_dir}", pattern: "SampleSheet.csv", mode: 'copy'
-    publishDir path: "${params.out_dir}", pattern: "SampleMap.csv", mode: 'copy'
-    publishDir path: "${params.out_dir}", pattern: "GarnettSheet.csv", mode: 'copy'
-    publishDir path: "${params.out_dir}/sample_id_maps", pattern: "*_SampleIDMap.csv", mode: 'copy'
 
     input:
-        file insamp from Channel.fromPath(params.generate_samplesheets)
+        path 
 
     output:
-        file "*Sheet.csv"
-        file "SampleMap.csv" optional true
-        file "*_SampleIDMap.csv" optional true
-
-    when:
-        params.generate_samplesheets != 'no_input'
-
+        path "*_*+*_*", emit: cigar
+        path "*+*", emit: amplicon
+        path "*,*", emit: experiment
 
     """
-    generate_sample_sheets.py $params.generate_samplesheets
+    python3
+        ${projectDir}/bin/checking_sample_sheet.py \
+        --path $params.sample_sheet \
+
     """
 }
 */
@@ -92,9 +97,9 @@ process bcl2fastq {
         path sample_sheet
         
     output:
-        path "*.fastq.gz", emit: bcl2
-        path "*_R1_001.fastq.gz", emit: R1
-        path "*_R2_001.fastq.gz", emit: R2
+        path "${params.prefix}*.fastq.gz", emit: bcl2
+        path "${params.prefix}*_R1_001.fastq.gz", emit: R1
+        path "${params.prefix}*_R2_001.fastq.gz", emit: R2
         path "*.txt"
 
     """
@@ -197,15 +202,31 @@ process rnaseq {
         path trimming
 
     output:
-    
+        path 
 
     // only run it when rna is exsited 
     when: 
-        $params.rna != "not_exist"
+        $params.rna == "not_exist"
 
-    """
-    python \
-    """
+    shell:
+    '''
+    for i in "!{params.out_dir}/seqprep/merge/*.fastq"; do
+        if [[ ${i} == *.fastq ] && [ 'rna' in ${i}]]; then
+            print i
+            index_dot=`echo $sequence | grep -aob '.' | grep -oE '[0-9]+' | head -1`
+            index_r=`echo $sequence | grep -aob 'r' | grep -oE '[0-9]+' | head -1`
+            index_extension=`echo $sequence | grep -aob '.fastq' | grep -oE '[0-9]+' | head -1`
+            amp=${i:0:${index_r}}; sample_name=${i:0:${index_dot}}; before_extension_name=${i:0:${index_extension}}
+            python \
+                !{projectDir}/bin/rnaseq.py \
+                --path !{params.testing_sam} \
+                --output . \
+                --amp $amp
+        else
+            pass
+        fi
+    done
+    '''
 }
 */
 
@@ -223,6 +244,9 @@ process needle {
     output:
         path "*.sam", emit: sam
     
+    //when:
+    //    ${params.enrich} == "not_enrich"
+
     shell:
     '''
     for sequence in !{trimming}; do
@@ -248,42 +272,40 @@ process needle {
 }
 
 process cigar {
-    
     beforeScript "mkdir -p ${params.out_dir}/sam/cigar_analyzer"
     publishDir "${params.out_dir}/sam/cigar_analyzer", mode: 'move'
     
     input:
         path sam
-    //just need to put input (*.sam) and replace {params.testing_sam}
 
     output:
         path "*.txt"
 
-    when:
-        ${params.enrich} != "not_enrich"
+    //when:
+    //    ${params.enrich} == "not_enrich"
 
     """
     python \
         $projectDir/bin/cigar_analyzer.py \
-        --path ${params.testing_sam} \
+        --path ${params.out_dir}/sam \
         --cigar ${params.cigar} \
         --output . 
-    head -15 cigar_counts/*.txt  >> cigar_counts/combined_cigar_counts.txt
+    head -15 *.txt  >> combined_cigar_counts.txt
     """
 }
-/*
-process sam_to_edits {
-    beforeScript "mkdir -p ${params.out_dir}/edits"
-    publishDir "${params.out_dir}/edits", mode: 'copy'
 
-    //input:
-        //path sam
+process sam_to_edits {
+    beforeScript "mkdir -p ${params.out_dir}/sam/edits"
+    publishDir "${params.out_dir}/sam/edits", mode: 'copy'
+
+    input:
+        path sam
         
     output:
         path "*.txt", emit: edits
     
-    when:
-        ${params.enrich} != "not_enrich"
+    //when:
+    //    ${params.enrich} == "not_enrich"
 
     script:
     """
@@ -295,21 +317,21 @@ process sam_to_edits {
         --output .
     """
 }
-*/
+
 
 /*
 ** annotated variants 
 */
 /*
 process annotated_variants {
-    beforeScript "mkdir -p ${params.out_dir}/annotated"
-    publishDir "${params.out_dir}/annotated", mode: 'copy'
+    beforeScript "mkdir -p ${params.out_dir}/Final"
+    publishDir "${params.out_dir}/Final", mode: 'copy'
 
     output:
-        path "*.txt", emit: annotated
+        path "*.txt", emit: variants
     
-    when:
-        ${params.enrich} != "not_enrich"
+    //when:
+    //    ${params.enrich} == "not_enrich"
 
     script:
     """
@@ -333,16 +355,15 @@ workflow {
         seqprep(bcl2fastq.out.R1, bcl2fastq.out.R2) //
         trimming(seqprep.out.merge)
         needle(trimming.out.trim)
-        //if (${params.rna} == "exist") {
-        //    rnaseq(trimming.out.trim)
-        //    needle(rnaseq.out.gDNA)
-        //}   else {
+        //if (${params.rna} == "not_exist") {
         //    needle(trimmning.out.trim)
+        //}   else {
+        //    rnaseq(trimming.out.trim)
+        //    needle(rnaseq.out.trim)
         //}
-        //if (${params.enrich} == "enrich")
         cigar(needle.out.sam)
-        //sam_to_edits(needle.out.sam)
-        //annotated_variants(sam_to_edits.out)
+        sam_to_edits(needle.out.sam)
+        //annotated_variants(sam_to_edits.out.variants)
 }
 
 workflow.onComplete {

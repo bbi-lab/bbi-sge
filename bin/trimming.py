@@ -3,9 +3,9 @@
 import gzip
 import sys
 from itertools import islice
-out_file = open(sys.argv[2],'w')
+out_file = open(sys.argv[4],'w')
 
-with gzip.open(sys.argv[1], 'r') as my_reads:
+with gzip.open(sys.argv[2], 'r') as my_reads:
     reads = 0
     reads_w_n = 0
     while True:

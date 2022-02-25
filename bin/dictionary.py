@@ -1,22 +1,10 @@
-#!/
-
-
-# amplicon
-
-
+#!/usr/bin/env python
 
 # cigar
 
-
+# amplicon
 
 # exp
-
-
-
-# other dictionaries from greg
-
-# 8_dict_tools_11192015.py
-#example use to calculate ratio dictionary and output data table with ratio and read counts from the two dictionaries:
 
 def import_dict(my_dict_file):
 	my_dict = {}
