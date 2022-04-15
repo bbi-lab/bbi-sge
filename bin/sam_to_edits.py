@@ -21,7 +21,7 @@ if __name__ == '__main__':
 	parser.add_argument('--amp', help='amplicon list')
 	parser.add_argument('--exp', help='experiment list')
 	#parser.add_argument('--ref', help='reference directory')
-	parser.add_argument('--path', help='directory')
+	parser.add_argument('--path', nargs='+', help='directory')
 	parser.add_argument('--output', help='ouputtest')
 	args = parser.parse_args()
 
@@ -32,20 +32,26 @@ output_dir = args.output
 read_threshold = .000002 
 alignment_score_threshold = 300
 #--------------------------------------------------------------------------------------------------------------------------------------------
-# amplicon
-fasta_dir = "/net/bbi/vol1/nobackup/SGE/fasta"
-amplicon_list = sys.argv[2].split('+')
-ref_seqs = {}
-for amplicon in amplicon_list:
-	ref_file = open(fasta_dir+'/'+amplicon+'.fa', 'r')
-	ref_header = ref_file.readline()
-	ref_seq = ref_file.readline().strip()
-	ref_seqs[amplicon] = ref_seq
-	ref_file.close()
+## put them in seperate dictionary to call in later...
+
+#amplicon
+fasta_dir = args.fasta
+amplicon_list = []
+with open(args.amp) as f:
+	ref_seqs = {}
+	for lines in f.readlines():
+		amplicon_list.append(lines.rstrip('\n'))
+		ref_file = open(fasta_dir+'/'+lines.rstrip('\n')+'.fa', 'r')
+		ref_header = ref_file.readline()
+		ref_seq = ref_file.readline().strip()
+		ref_seqs[lines.rstrip('\n')] = ref_seq
+		ref_file.close()
 
 # edits
 edits_per_amp = {}
-editing_info = open('/net/bbi/vol1/nobackup/SGE/BRCA1/BRCA1_editing_data.txt', 'r')
+#editing_info = open('/net/bbi/vol1/nobackup/SGE/BRCA1/BRCA1_editing_data.txt', 'r')
+editing_info = open('/net/bbi/vol1/nobackup/SGE/PALB2/PALB2_editing_data.txt', 'r')
+#editing_info = open('/mnt/c/Users/shinj/Desktop/CAVA/CAVA_Production/Pipeline/SGE/PALB2/PALB2_editing_data.txt', 'r')
 editing_info_header = editing_info.readline()
 for line in editing_info:
 	edits = line.strip().split()
@@ -58,7 +64,7 @@ exp_groupings = {}
 for grouping in exp_groupings_list:
 	g_info = grouping.split(',')
 	exp_groupings[g_info[0]] = g_info[1:] 
-#print exp_groupings
+print exp_groupings
 #DEFINE FUNCTIONS:
 #--------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -239,15 +245,16 @@ def get_all_hdr_variants(amplicon,ref_seq_dict,edits_per_amp_dict): #requires mu
 
 dict_of_var_dicts = {}
 sample_list = []
-working_dir = args.path
-#run on all sam files in the cwd
-for i in os.listdir(working_dir):
-	print working_dir
+
+
+# 
+#for i in working_dir:
+for i in working_dir:
 	if i.endswith(".sam"):
 		#gets the sample name (i.e X2_HDRL), the timepoint (i.e. pre), and the editing info expected
 		index_of_first_dot = i.find('.')
 		sample = i[:index_of_first_dot]
-		index_of_first_under = i.find('_')
+		index_of_first_under = i.find('-')
 		timepoint = i[index_of_first_under+1:index_of_first_dot]
 		experiment = i[:index_of_first_under]
 		if amplicon not in amplicon_list:
@@ -255,9 +262,9 @@ for i in os.listdir(working_dir):
 		if sample not in sample_list:
 			sample_list.append(sample)
 		#opens the sam_file and imports the count dict:
-		print i
-		print working_dir
-		with open(working_dir+i, 'r') as sam_file:
+		#print i
+		#print working_dir
+		with open(i, 'r') as sam_file:
 			dict_of_var_dicts[sample] = sam_to_variant_cigar_dict(sam_file,alignment_score_threshold)
 	else:
 		pass
@@ -299,6 +306,8 @@ for exp in exp_groupings.keys():
 	post_var_dict = dict_of_var_dicts[exp_groupings[exp][1]]
 	lib_var_dict = dict_of_var_dicts[exp_groupings[exp][2]]
 	neg_var_dict = dict_of_var_dicts[exp_groupings[exp][3]]
+        print neg_var_dict
+        print exp_groupings[exp][4]
 	rna_var_dict = dict_of_var_dicts[exp_groupings[exp][4]]
 
 	pre_var_rc = float(get_read_count_dol(pre_var_dict))
