@@ -40,7 +40,7 @@ Detail description of each steps
         
         module load libevent/2.1.8 tmux/2.8
         tmux   
-If you get disconnected, you can return to the head node you were using (grid-head1 or grid-head2) and type:
+    If you get disconnected, you can return to the head node you were using (grid-head1 or grid-head2) and type:
         
         tmux attach
 
