@@ -24,12 +24,13 @@
 
 ## Useage
 
-How to run the pipeline:
-1. Logining grid-head
-2. Getting in tmux
-3. Getting in qlogin
-4. Changing parameters that you want in params.config
-5. run the nextflow
+How to run the pipeline:  
+
+    1. Logining grid-head
+    2. Getting in tmux
+    3. Getting in qlogin
+    4. Changing parameters that you want in params.config
+    5. run the nextflow
 
 Detail description of each steps
 
