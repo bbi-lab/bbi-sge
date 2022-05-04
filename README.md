@@ -59,7 +59,8 @@ Detail description of each steps
 All the required modules are loaded within the nextflow.config and main.nf, so you do not need to worry about loading modules 
 
 General gs-cluster modules  
-Required to load other modules; .bashrc
+Required to load other modules; .bashrc  
+
         module load modules modules-init modules-gs  
 
 ## Extra Features
