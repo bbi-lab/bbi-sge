@@ -45,8 +45,9 @@ Detail description of each steps
         tmux attach
 
 3. Always start with a qlogin session before you begin the pipeline. This can be done using:
-    qlogin -l mfree=48G 
-You can submit the job without qlogin, but if the cluster is running out of rescource(memory), it will crush a middle of run.
+    
+        qlogin -l mfree=48G 
+    You can submit the job without qlogin, but if the cluster is running out of rescource(memory), it will crush a middle of run.
 
 4. Now, you can look up the params.config file to change parameters (you can change name of params.config file whatever you want it). Information about what each parameters for are descripted in config file.
 
