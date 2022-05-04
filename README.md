@@ -40,23 +40,25 @@ Detail description of each steps
         
         module load libevent/2.1.8 tmux/2.8
         tmux   
+        
     If you get disconnected, you can return to the head node you were using (grid-head1 or grid-head2) and type:
         
         tmux attach
-
+        
 3. Always start with a qlogin session before you begin the pipeline. This can be done using:
     
         qlogin -l mfree=48G 
-    You can submit the job without qlogin, but if the cluster is running out of rescource(memory), it will crush a middle of run.
+    You can submit the job without qlogin, but if the cluster is running out of rescource(memory), it will crush during middle of run.
 
 4. Now, you can look up the params.config file to change parameters (you can change name of params.config file whatever you want it). Information about what each parameters for are descripted in config file.
 
 5. Running the nextflow
+
         ./nextflow run main.nf -c <config name>.config 
 
 All the required modules are loaded within the nextflow.config and main.nf, so you do not need to worry about loading modules 
 
-General gs-cluster modules 
+General gs-cluster modules  
 Required to load other modules; .bashrc
     module load modules modules-init modules-gs  
 
