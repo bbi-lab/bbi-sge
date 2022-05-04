@@ -60,18 +60,20 @@ All the required modules are loaded within the nextflow.config and main.nf, so y
 
 General gs-cluster modules  
 Required to load other modules; .bashrc
-    module load modules modules-init modules-gs  
+        module load modules modules-init modules-gs  
 
 ## Extra Features
 Those are implanted features on nextflow that can be useful to run the pipeline.
 
 1. resume  
 This will resume the pipeline from where the problem arise after fixing the problem.
-    nextflow run bbi-sge -c <config name> -resume
+        
+        nextflow run bbi-sge -c <config name> -resume
 
 2. notification  
 You can put tagging on the command line to get a notification when you are done
-    nextflow run bbi-sge -c <config name> -N <recipient address>  
+    
+        nextflow run bbi-sge -c <config name> -N <recipient address>  
 
 ## dependency
     The script rquires Nextflow version >=21.10.6  
