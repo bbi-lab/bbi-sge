@@ -37,6 +37,7 @@ Detail description of each steps
 1. Login to gs cluster  
 
 2. As the Nextflow pipeline is run interactively, please use a terminal multiplexer such as tmux. tmux sessions are persistent which means that programs in tmux will continue to run even if you get disconnected. You can start a tmux session by using:
+        
         module load libevent/2.1.8 tmux/2.8
         tmux   
 If you get disconnected, you can return to the head node you were using (grid-head1 or grid-head2) and type:
