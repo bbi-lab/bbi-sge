@@ -19,6 +19,7 @@
         curl -fsSL https://get.nextflow.io | bash
 
 3. Copy Seqprep folder to inside of bbi-sge folder  
+
         scp -r uw-id@/net/gs/vol1/home/gf2/bin/SeqPrep/ uw-id@the directory of your nextflow
 
 ## Useage
