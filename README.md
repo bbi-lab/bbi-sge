@@ -76,6 +76,6 @@ You can put tagging on the command line to get a notification when you are done
         nextflow run bbi-sge -c <config name> -N <recipient address>  
 
 ## dependency
-The script rquires Nextflow version ">=21.10.6"  
+The script rquires Nextflow version **>=21.10.6**    
 
     gmp/6.1.2 mpfr/4.0.1 mpc/1.1.0 gcc/8.1.0 bcl2fastq/2.20 java/1.8.0 fastqc/0.11.7 EMBOSS/6.6.0
