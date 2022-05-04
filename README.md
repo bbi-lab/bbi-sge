@@ -9,8 +9,9 @@
 
 ## Installation
 
-1. You need to git clone follwing:
-        module load git/2.18.0
+1. You need to git clone follwing:  
+
+    module load git/2.18.0
         git clone https://github.com/bbi-lab/bbi-sge.git
 
 2. Download nextflow inside of bbi-sge folder that is created by step 1.   
