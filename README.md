@@ -26,7 +26,7 @@
 
 How to run the pipeline:  
 
-    1. Logining grid-head
+    1. Logining gs cluster and grid-head
     2. Getting in tmux
     3. Getting in qlogin
     4. Changing parameters that you want in params.config
@@ -34,7 +34,7 @@ How to run the pipeline:
 
 Detail description of each steps  
 
-1. Login to gs cluster  
+1. Login to gs cluster and grid-head
 
 2. As the Nextflow pipeline is run interactively, please use a terminal multiplexer such as tmux. tmux sessions are persistent which means that programs in tmux will continue to run even if you get disconnected. You can start a tmux session by using:
         
@@ -47,8 +47,9 @@ Detail description of each steps
         
 3. Always start with a qlogin session before you begin the pipeline. This can be done using:
     
-        qlogin -l mfree=48G 
+        qlogin -l mfree=48G (-P shendure_bbi)
     You can submit the job without qlogin, but if the cluster is running out of rescource(memory), it will crush during middle of run.
+    -P shendure_bbi allows to qlogin in shendure_bbi node instead of sage.  
 
 4. Now, you can look up the params.config file to change parameters (you can change name of params.config file whatever you want it). Information about what each parameters for are descripted in config file.
 
@@ -76,7 +77,10 @@ You can put tagging on the command line to get a notification when you are done
     
         nextflow run bbi-sge -c <config name> -N <recipient address>  
 
-## dependency
+## Requirement
+You need a permission on shendure_bbi node.
+
+## Dependency
 The script rquires Nextflow version **>=21.10.6**    
 
     gmp/6.1.2 mpfr/4.0.1 mpc/1.1.0 gcc/8.1.0 bcl2fastq/2.20 java/1.8.0 fastqc/0.11.7 EMBOSS/6.6.0
