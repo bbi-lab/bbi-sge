@@ -2,15 +2,22 @@
 
 
 import argparse
-import gzip
 import sys
 from itertools import islice
 
+#parser arguments that are called in main.nf
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='parameters for sam to edits') 
+    parser.add_argument('--input', help='input files from trimming process')
+    parser.add_argument('--output', help='ouput files for needleall')
+    parser.add_argument('--amp', help='amp')
+    args = parser.parse_args()
 
 
-out_file = open(sys.argv[4],'w')
-summary_out = open('summary_cDNA_to_gDNA.txt','a')
 
+
+out_file = open(args.output,'w')
+#summary_out = open('summary_cDNA_to_gDNA.txt','a')
 cDNA_info_file = open('/net/bbi/vol1/home/jongs2/SGE/PALB2/PALB2_cDNA_data.txt','r') #tab-delimited file with header
 
 #read in the editing data for all amplicons
