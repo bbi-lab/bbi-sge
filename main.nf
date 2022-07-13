@@ -310,7 +310,7 @@ process sam_to_edits {
     script:
     """
     python \
-        $projectDir/bin/sam_to_edits.py \
+        $projectDir/bin/sam_to_edits_test.py \
         --amp ${params.amplicon_list} \
         --exp ${params.experiment_group} \
         --ref ${params.reference} \
