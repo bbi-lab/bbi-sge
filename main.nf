@@ -339,7 +339,7 @@ process annotated_variants {
     script:
     """
     python \
-        $projectDir/bin/annotated_variants.py \
+        $projectDir/bin/annotated_variants_test.py \
         --amp ${params.amplicon_list} \
         --exp ${params.experiment_group} \
         --ref ${params.reference} \
