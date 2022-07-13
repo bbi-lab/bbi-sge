@@ -31,6 +31,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='testindex')
     parser.add_argument('--amp', help='amplicon_list')
     parser.add_argument('--exp', help='experiment_list')
+    #parser.add_argument('--cadd', help='cadd file directory'
+    #parser.add_argument('--clinvar', help='clinvar file directory'
     parser.add_argument('--path', nargs='+', help='amplicon_list')
     parser.add_argument('--output', help='amplicon_list')
     args = parser.parse_args()
@@ -52,17 +54,20 @@ output_dir = args.output
 common_file_id = '.txt'
 #.... amplicon probably need to change
 #amplicon_list = "PALB2X2".split('+') #will pull in amplicon info for all of the exons. PALB2X1+PALB2X2
-fasta_dir = args.fasta
-amplicon_list = []
-with open(args.amp) as f:
-	ref_seqs = {}
-	for lines in f.readlines():
-		amplicon_list.append(lines.rstrip('\n'))
-		ref_file = open(fasta_dir+'/'+lines.rstrip('\n')+'.fa', 'r')
-		ref_header = ref_file.readline()
-		ref_seq = ref_file.readline().strip()
-		ref_seqs[lines.rstrip('\n')] = ref_seq
-		ref_file.close()
+amplicon_list = sys.argv[2].split('+')
+print amplicon_list
+print type(amplicon_list)
+
+#REFERENCE FILES (in fasta format -- takes second line of file), hardcoded to look in main BRCA1 fasta storage:
+fasta_dir = '/net/bbi/vol1/nobackup/SGE/fasta/'
+#fasta_dir = "/mnt/c/Users/shinj/Desktop/CAVA/CAVA_Production/Pipeline/SGE/fasta"
+ref_seqs = {}
+for amplicon in amplicon_list:
+    ref_file = open(fasta_dir+'/'+amplicon+'.fa', 'r')
+    ref_header = ref_file.readline()
+    ref_seq = ref_file.readline().strip()
+    ref_seqs[amplicon] = ref_seq
+    ref_file.close()
 
 #editing info for each experiment, including region that is mutated
 #This can stay hardcoded for all BRCA1 experiments, now.
@@ -295,11 +300,11 @@ def mutagenize(my_string):
                 all_variants += [upper_string[:i]+j+upper_string[i+1:]]
     return all_variants
 
-def get_all_hdr_variants(amplicon,ref_seq_dict,edits_per_amp_dict): #requires mutagenize function above
+def get_all_hdr_variants(amplicon,ref_seq_dict,edits_per_amp): #requires mutagenize function above
     #here, you want to feed it amplicon, ref_seqs, and edits_per_amp as input
     ref_seq = ref_seq_dict[amplicon]
     all_hdr_variants = [ref_seq] #list will start with total wt
-    my_editing_info = edits_per_amp_dict[amplicon]
+    my_editing_info = edits_per_amp[amplicon]
     #lists of 5' and 3' edits
     edits5 = my_editing_info[0].strip().split(',')
     edits3 = my_editing_info[1].strip().split(',')
@@ -374,13 +379,14 @@ def get_rev_comp(ref_base):
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #This can stay hardcoded for all BRCA1 experiments, now.
-edits_per_amp = {}
-editing_info = open('/mnt/c/Users/shinj/Desktop/CAVA/CAVA_Production/Pipeline/SGE/PALB2/PALB2_editing_data.txt', 'r')
-editing_info_header = editing_info.readline()
-for line in editing_info:
-    edits = line.strip().split()
+#edits_per_amp = {}
+
+#editing_info = open('/mnt/c/Users/shinj/Desktop/CAVA/CAVA_Production/Pipeline/SGE/PALB2/PALB2_editing_data.txt', 'r')
+#editing_info_header = editing_info.readline()
+#for line in editing_info:
+#    edits = line.strip().split()
     #each amplicon in the file is a key that points to a list containing the info for that amplicon [5' HDR, 3' HDR, cut_pos, cut_end, mut_start, mut_end] 
-    edits_per_amp[edits[0]] = edits[1:]
+#    edits_per_amp[edits[0]] = edits[1:]
 
 #get the cadd scores out for each amplicon:
 cadd_data_dod = {}
@@ -441,12 +447,16 @@ for i in working_dir:
             amplicon = exp[:exp.find('r')]
         else:
             amplicon = exp
-
+        
+        #amplicon = exp
+        print amplicon
         ref_seq = ref_seqs[amplicon]
         print ref_seq
         print type(ref_seq)
         seq_start = seq_start_dict[amplicon]
+        print seq_start
         oligo_variants = get_all_hdr_variants(amplicon,ref_seqs,edits_per_amp)
+        print oligo_variants
         len_oligo_variants = len(oligo_variants)
         ####
         #Extract editing info for the experiment (hdr mm edits, and the mutated region's start and end)
@@ -539,10 +549,10 @@ for i in working_dir:
         header_string+='pHDR_pre\tpHDR_post\tpHDR_lib\tpHDR_neg\tpHDR_rna\ttHDR_pre\ttHDR_post\ttHDR_lib\ttHDR_neg\ttHDR_rna\t'
         header_string+='tHDR_pre_pseudo_freq\ttHDR_post_pseudo_freq\ttHDR_lib_pseudo_freq\ttHDR_neg_pseudo_freq\ttHDR_rna_pseudo_freq\ttHDR_pre_lib_ratio\ttHDR_post_pre_ratio\ttHDR_post_lib_ratio\ttHDR_rna_pre_ratio\ttHDR_rna_post_ratio\t'
 
-        if len(var_dict[ordered_variants[0]]) == (len(header_string.strip().split('\t'))-1):
-            print 'Length of header matches length of data columns.'
-        else:
-            print 'Lengths of header list and variant dictionary are not equal!'
+        #if len(var_dict[ordered_variants[0]]) == (len(header_string.strip().split('\t'))-1):
+        #    print 'Length of header matches length of data columns.'
+        #else:
+        #    print 'Lengths of header list and variant dictionary are not equal!'
 
         #indices of key variaint identifiers
         index_pre = header_index(header_string,'pre')
@@ -550,6 +560,7 @@ for i in working_dir:
         index_lib = header_index(header_string,'lib')
         index_neg = header_index(header_string,'neg')
         index_rna = header_index(header_string,'rna')
+        print index_rna
         index_hdr5 = header_index(header_string,'hdr5')
         index_hdr3 = header_index(header_string,'hdr3')
         index_mismatch_count = header_index(header_string,'mismatch_count')
@@ -626,11 +637,15 @@ for i in working_dir:
             p_hdr_5 = (variant_data[index_hdr5] == 'yes' and variant_data[index_hdr3] == 'no')
             p_hdr_3 = (variant_data[index_hdr5] == 'no' and variant_data[index_hdr3] == 'yes')
             no_hdr = (variant_data[index_hdr5] == 'no' and variant_data[index_hdr3] == 'no')
-            no_indels = (int(variant_data[index_del_count]) == 0 and int(variant_data[index_ins_count]) == 0)
+            print index_del_count
+            print variant_data
+            print variant_data[25]
+
+            no_indels = (int(variant_data[25]) == 0 and int(variant_data[26]) == 0)
 
             #remember, these snv's are only those NOT in the HDR signature for the experiment AND in the mutated region
 
-            single_snv = (int(variant_data[index_mismatch_count]) == 1)
+            single_snv = (int(variant_data[24]) == 1)
             if single_snv: #location check on single snv's to prevent editing error's from getting counted here, and trying to get CADD annotations
                 snv_edit = get_snv_mismatch(variant_data[index_edit_string],exp_hdr_edits)
                 snv_location = int(snv_edit[:snv_edit.find('-X')])
@@ -639,7 +654,7 @@ for i in working_dir:
                 else:
                     single_snv = False
 
-            no_snv = (int(variant_data[index_mismatch_count]) == 0)
+            no_snv = (int(variant_data[24]) == 0)
 
             #higher order combinations (mutually exclusive!!):
             wt_wt = (no_hdr and no_snv and no_indels)
@@ -650,8 +665,8 @@ for i in working_dir:
             p_hdr_5_snv = (p_hdr_5 and single_snv and no_indels)
             p_hdr_3_wt = (p_hdr_3 and no_snv and no_indels)
             p_hdr_3_snv = (p_hdr_3 and single_snv and no_indels)
-            wt_single_del = (int(variant_data[index_del_count]) == 1 and no_hdr)
-            c_hdr_single_del = (int(variant_data[index_del_count]) == 1 and c_hdr and (no_snv or single_snv))
+            wt_single_del = (int(variant_data[25]) == 1 and no_hdr)
+            c_hdr_single_del = (int(variant_data[25]) == 1 and c_hdr and (no_snv or single_snv))
 
             #put into a list
             edit_cat_data = [c_hdr,p_hdr_5,p_hdr_3,no_hdr,no_indels,single_snv,no_snv,wt_wt,wt_snv,c_hdr_wt,c_hdr_snv,p_hdr_5_wt,p_hdr_5_snv,p_hdr_3_wt,p_hdr_3_snv,wt_single_del,c_hdr_single_del]

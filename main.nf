@@ -3,7 +3,9 @@
 // enable dsl 2 of nextflow 
 nextflow.enable.dsl=2
 
-// loading nf modules
+// need to modulate like QUANTS
+// loading main.nf - *.nf - nf modules
+// or loading main.nf - *.nf with in-script
 // include { bcl2fastq; fastqc } from './demux.nf'
 
 // check the version of Nextflow
@@ -62,21 +64,29 @@ if (params.help) {
     exit 1
 }
 
-process csv {
-    beforeScript "mkdir -p ${params.out_dir}/csv"
-    publishDir "${params.out_dir}/csv", mode: 'copy'
-    
+/*
+params.sheet = 'path/test.csv'
+Channel
+    .fromPath(params.sheet)
+    .splitCSV(header:true)
+    .map{row->tuple(raw.sampleId, file(row.read1)), ....}
+    .set{csv_ch}
+process sample_sheet_check {
+    input:
+        set sample_ch 
     output:
-        path 'prefix.txt', emit: amp
-        path 'other.txt', emit: other
+        val "*_*+*_*", emit: cigar
+        val "*+*", emit: amplicon
+        val "*,*", emit: experiment
+        val "", emit: prefix
 
     """
-    python \
-        $projectDir/bin/reading_csv.py \
-        --path ${params.sample_sheet} \
-        --output . \
+    python3
+        ${projectDir}/bin/checking_sample_sheet.py \
+        --path $params.sample_sheet \
     """
 }
+*/
 
 
 //changing some bcl2fastq parameters to value channel
@@ -93,18 +103,17 @@ process bcl2fastq {
         path sample_sheet
         
     output:
-        path "${params.prefix}*.fastq.gz", emit: bcl2
-        path "${params.prefix}*_R1_001.fastq.gz", emit: R1
-        path "${params.prefix}*_R2_001.fastq.gz", emit: R2
+        path "*_001.fastq.gz", emit: bcl2
+        path "*_R1_001.fastq.gz", emit: R1
+        path "*_R2_001.fastq.gz", emit: R2
         path "*"
 
-    """
+    shell:
+    '''
     bcl2fastq \
-        -R ${seq_dir} -o . \
-        --sample-sheet ${sample_sheet} --interop-dir . \
-        --no-lane-splitting --use-bases-mask Y*,I*,I*,Y* \
-        --minimum-trimmed-read-length 0 --mask-short-adapter-reads 0
-    """
+        -R !{seq_dir} -o . --sample-sheet !{sample_sheet} --no-lane-splitting --use-bases-mask Y*,I*,I*,Y* --minimum-trimmed-read-length 0 --mask-short-adapter-reads 0 --interop-dir .
+    rm ./Undetermined*
+    '''
 }
 
 
@@ -153,16 +162,11 @@ process seqprep {
         index=`echo $sequences | grep -aob '_' | grep -oE '[0-9]+' | head -1`
         sample_name=${sequences:0:${index}}
         !{projectDir}/SeqPrep/./SeqPrep \
-            -f !{R1} \
-            -r !{R2} \
-            -1 ./${sample_name}.R1.fastq.gz \
-            -2 ./${sample_name}.R2.fastq.gz \
-            -s ./${sample_name}.merge.fastq.gz \
-            -A GGTTTGGAGCGAGATTGATAAAGT -B CTGAGCTCTCTCACAGCCATTTAG \
-            -M 0.1 -m 0.001 -q 20 -o 20        
+        -f !{R1} -r !{R2} -1 ./${sample_name}.R1.fastq.gz -2 ./${sample_name}.R2.fastq.gz -A GGTTTGGAGCGAGATTGATAAAGT -B CTGAGCTCTCTCACAGCCATTTAG -M 0.1 -s ./${sample_name}.merge.fastq.gz -m 0.001 -q 20 -o 20    
     done
     '''
 }
+
 //!{params.seqprep}/${sample_name}*.fastq 
 process trimming {
     beforeScript "mkdir -p ${params.out_dir}/seqprep/trimming"
@@ -180,7 +184,7 @@ process trimming {
         index=`echo $sequence | grep -aob '.fastq' | grep -oE '[0-9]+' | head -1`
         sample_name=${sequence:0:${index}}
         python \
-            !{projectDir}/bin/trimming.py \
+            !{projectDir}/bin/trimming_test.py \
             --path ${sequence} \
             --output ${sample_name}.fastq
     done
@@ -189,6 +193,8 @@ process trimming {
 
 /*
 ** cDNA to gDNA
+** add if statement in workflow to pass different input; output
+** should work in that way
  */
 /*
 process rnaseq {
@@ -196,7 +202,7 @@ process rnaseq {
         path trimming
 
     output:
-        path 
+        path rna
 
     // only run it when rna is exsited 
     when: 
@@ -214,10 +220,11 @@ process rnaseq {
             python \
                 !{projectDir}/bin/rnaseq.py \
                 --path !{params.testing_sam} \
-                --output . \
-                --amp $amp
+                --cDNA !{params.cDNA} \
+                --amp !{params.amplicon}
+                --output . \        
         else
-            pass
+            :
         fi
     done
     '''
@@ -253,7 +260,7 @@ process needle {
         else 
             sample_amplicon=${sequence:0:${index_dash}}
         fi
-        sample_ref="/net/bbi/vol1/home/jongs2/SGE/fasta/${sample_amplicon}.fa"
+        sample_ref="/net/bbi/vol1/home/jongs2/SGE/fasta/PALB2X2.fa"
         sequence_ref="!{params.out_dir}/seqprep/trimming/$sequence"
         needleall \
             -asequence $sample_ref \
@@ -292,8 +299,6 @@ process sam_to_edits {
     publishDir "${params.out_dir}/sam/edits", mode: 'copy'
 
     input:
-        path amp
-        path others
         path sam
         
     output:
@@ -306,12 +311,12 @@ process sam_to_edits {
     """
     python \
         $projectDir/bin/sam_to_edits.py \
-        --amp ${amp} \
+        --amp ${params.amplicon_list} \
         --exp ${params.experiment_group} \
+        --ref ${params.reference} \
+        --edit ${params.edit} \
         --path ${sam}\
         --output .
-        --fasta ${params.ampliconseq} \
-        --edits ${params.editing}
     """
 }
 
@@ -323,7 +328,6 @@ process annotated_variants {
     publishDir "${params.out_dir}/Final", mode: 'copy'
 
     input:
-        path amp
 	    path edits
 
     output:
@@ -336,27 +340,24 @@ process annotated_variants {
     """
     python \
         $projectDir/bin/annotated_variants.py \
-        --amp ${amp} \
+        --amp ${params.amplicon_list} \
+        --exp ${params.experiment_group} \
+        --ref ${params.reference} \
+        --edit ${params.edit} \
+        --cadd ${params.cadd} \
+        --clinvar ${params.clinvar} \
         --path ${edits} \
         --output .
-        --fasta ${params.ampliconseq} \
-        --edits ${params.editing} \
-        --cadd ${params.cadd}\
-        --clinvar ${params.clinvar}
     """
 }
 
+//take:
 workflow {
-    //take:
-    //	merge = Channel.fromPath(seqprep.out.merge) 
-    //  fastqc = Channel.fromPath(bcl2fastq.out_bcl2)
     
     main:
-        csv()
-        annotated_variants(foo.out.amp, sam_to_edits.out.edits)
         bcl2fastq(seq_dir, sample_sheet) // bcl2fastq - illumina to fastq
         fastqc(bcl2fastq.out.bcl2) // quality check fastqc running parrel with seqprep
-        seqprep(bcl2fastq.out.R1, bcl2fastq.out.R2) //
+        seqprep(bcl2fastq.out.bcl2, bcl2fastq.out.R1, bcl2fastq.out.R2) //
         trimming(seqprep.out.merge)
         needle(trimming.out.trim)
         //if (${params.rna} == "not_exist") {
@@ -366,8 +367,8 @@ workflow {
         //    needle(rnaseq.out.trim)
         //}
         cigar(needle.out.sam)
-        sam_to_edits(csv.out.amp, csv.out.other, needle.out.sam)
-        annotated_variants(csv.out.amp, sam_to_edits.out.edits)
+        sam_to_edits(needle.out.sam)
+        annotated_variants(sam_to_edits.out.edits)
 }
 
 workflow.onComplete {

@@ -20,7 +20,8 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='parameters for sam to edits') 
 	parser.add_argument('--amp', help='amplicon list')
 	parser.add_argument('--exp', help='experiment list')
-	#parser.add_argument('--ref', help='reference directory')
+	parser.add_argument('--ref', help='reference directory for amplicon sequence')
+        parser.add_argument('--edit', help='edit.txt directory')
 	parser.add_argument('--path', nargs='+', help='directory')
 	parser.add_argument('--output', help='ouputtest')
 	args = parser.parse_args()
@@ -34,23 +35,22 @@ alignment_score_threshold = 300
 #--------------------------------------------------------------------------------------------------------------------------------------------
 ## put them in seperate dictionary to call in later...
 
-#amplicon
-fasta_dir = args.fasta
-amplicon_list = []
-with open(args.amp) as f:
-	ref_seqs = {}
-	for lines in f.readlines():
-		amplicon_list.append(lines.rstrip('\n'))
-		ref_file = open(fasta_dir+'/'+lines.rstrip('\n')+'.fa', 'r')
-		ref_header = ref_file.readline()
-		ref_seq = ref_file.readline().strip()
-		ref_seqs[lines.rstrip('\n')] = ref_seq
-		ref_file.close()
+# amplicon
+fasta_dir = "/net/bbi/vol1/nobackup/SGE/fasta"
+#fasta_dir = "/mnt/c/Users/shinj/Desktop/CAVA/CAVA_Production/Pipeline/SGE/fasta"
+amplicon_list = sys.argv[2].split('+')
+ref_seqs = {}
+for amplicon in amplicon_list:
+	ref_file = open(fasta_dir+'/'+amplicon+'.fa', 'r')
+	ref_header = ref_file.readline()
+	ref_seq = ref_file.readline().strip()
+	ref_seqs[amplicon] = ref_seq
+	ref_file.close()
 
 # edits
 edits_per_amp = {}
-#editing_info = open('/net/bbi/vol1/nobackup/SGE/BRCA1/BRCA1_editing_data.txt', 'r')
-editing_info = open('/net/bbi/vol1/nobackup/SGE/PALB2/PALB2_editing_data.txt', 'r')
+editing_info = open(args.edit, 'r')
+#editing_info = open('/net/bbi/vol1/nobackup/SGE/PALB2/PALB2_editing_data.txt', 'r')
 #editing_info = open('/mnt/c/Users/shinj/Desktop/CAVA/CAVA_Production/Pipeline/SGE/PALB2/PALB2_editing_data.txt', 'r')
 editing_info_header = editing_info.readline()
 for line in editing_info:
@@ -308,13 +308,13 @@ for exp in exp_groupings.keys():
 	neg_var_dict = dict_of_var_dicts[exp_groupings[exp][3]]
         print neg_var_dict
         print exp_groupings[exp][4]
-	rna_var_dict = dict_of_var_dicts[exp_groupings[exp][4]]
+	#rna_var_dict = dict_of_var_dicts[exp_groupings[exp][4]]
 
 	pre_var_rc = float(get_read_count_dol(pre_var_dict))
 	post_var_rc = float(get_read_count_dol(post_var_dict))
 	lib_var_rc = float(get_read_count_dol(lib_var_dict))
 	neg_var_rc = float(get_read_count_dol(neg_var_dict))
-	rna_var_rc = float(get_read_count_dol(rna_var_dict))
+	#rna_var_rc = float(get_read_count_dol(rna_var_dict))
 
 	#create a list of all variants present in either pre_var_dict or post_var_dict (#edited here to include lib as well) -- sorted by counts
 	pre_variants = sort_counts_dol(pre_var_dict)
@@ -323,7 +323,7 @@ for exp in exp_groupings.keys():
 	#print len(post_variants), 'post-variants'
 	lib_variants = sort_counts_dol(lib_var_dict)
 	#print len(lib_variants), 'lib-variants'
-	rna_variants = sort_counts_dol(rna_var_dict)
+	#rna_variants = sort_counts_dol(rna_var_dict)
 	#print len(rna_variants), 'rna-variants'
 	#print post_variants
 	#what's going on here?! -- Answer from Aaron;  need to use a dictionary not a list for comparison -- will look up way faster due to indexed nature.
@@ -332,9 +332,9 @@ for exp in exp_groupings.keys():
 	for post_variant in post_variants:
 		if post_variant not in pre_var_dict:
 			unique_post_variants.append(post_variant)
-	for rna_variant in rna_variants:
-		if rna_variant not in pre_var_dict:
-			unique_rna_variants.append(rna_variant)
+	#for rna_variant in rna_variants:
+	#	if rna_variant not in pre_var_dict:
+	#		unique_rna_variants.append(rna_variant)
 
 	#print len(unique_post_variants), 'unique post variants (not in pre)'
 	#print len(unique_rna_variants), 'unique rna variants (not in pre)'
@@ -351,7 +351,7 @@ for exp in exp_groupings.keys():
 	post_var_pseudo_rc = post_var_rc + len(post_var_dict)
 	lib_var_pseudo_rc = lib_var_rc + len(lib_var_dict)
 	neg_var_pseudo_rc = neg_var_rc + len(neg_var_dict)
-	rna_var_pseudo_rc = rna_var_rc + len(rna_var_dict)
+	#rna_var_pseudo_rc = rna_var_rc + len(rna_var_dict)
 
 	#place to store aggregate data from each sample:
 	exp_master_dict = {}
@@ -366,14 +366,18 @@ for exp in exp_groupings.keys():
 			cigar = lib_var_dict[variant][1]
 		outline_data+=[cigar]
 		outline_data+=cigar_to_edits(cigar,variant,ref_seq) #define ref seq here first!!!
-		raw_reads = [dol_lookup(pre_var_dict,variant),dol_lookup(post_var_dict,variant),dol_lookup(lib_var_dict,variant),dol_lookup(neg_var_dict,variant),dol_lookup(rna_var_dict,variant)]
+		raw_reads = [dol_lookup(pre_var_dict,variant),dol_lookup(post_var_dict,variant),dol_lookup(lib_var_dict,variant),dol_lookup(neg_var_dict,variant)]
+#,dol_lookup(rna_var_dict,variant)]
 		pseudo_reads = []
 		for i in raw_reads:
 			pseudo_reads.append(1+i)
-		raw_freq = [raw_reads[0]/pre_var_rc,raw_reads[1]/post_var_rc,raw_reads[2]/lib_var_rc,raw_reads[3]/neg_var_rc,raw_reads[4]/rna_var_rc]
-		pseudo_freq = [pseudo_reads[0]/pre_var_pseudo_rc,pseudo_reads[1]/post_var_pseudo_rc,pseudo_reads[2]/lib_var_pseudo_rc,pseudo_reads[3]/neg_var_pseudo_rc,pseudo_reads[4]/rna_var_pseudo_rc]
+		raw_freq = [raw_reads[0]/pre_var_rc,raw_reads[1]/post_var_rc,raw_reads[2]/lib_var_rc,raw_reads[3]/neg_var_rc]
+#,raw_reads[4]/rna_var_rc]
+		pseudo_freq = [pseudo_reads[0]/pre_var_pseudo_rc,pseudo_reads[1]/post_var_pseudo_rc,pseudo_reads[2]/lib_var_pseudo_rc,pseudo_reads[3]/neg_var_pseudo_rc]
+#,pseudo_reads[4]/rna_var_pseudo_rc]
 		#only 3 ratios calculated, all from pseudocounts
-		ratios = [pseudo_freq[0]/pseudo_freq[2],pseudo_freq[1]/pseudo_freq[0],pseudo_freq[1]/pseudo_freq[2],pseudo_freq[4]/pseudo_freq[0],pseudo_freq[4]/pseudo_freq[1]]
+		ratios = [pseudo_freq[0]/pseudo_freq[2],pseudo_freq[1]/pseudo_freq[0],pseudo_freq[1]/pseudo_freq[2]]
+#,pseudo_freq[4]/pseudo_freq[0],pseudo_freq[4]/pseudo_freq[1]]
 		outline_data = outline_data + raw_reads + pseudo_reads + raw_freq + pseudo_freq + ratios
 
 		#test to see if the variants' edits match the HDR edits (from outside tdl file specified above)
@@ -472,8 +476,10 @@ for exp in exp_groupings.keys():
 				pHDR_print_count +=1
 			pHDR_raw_reads = [dol_lookup(pre_var_dict,pHDR_eq_var),dol_lookup(post_var_dict,pHDR_eq_var),dol_lookup(lib_var_dict,pHDR_eq_var),dol_lookup(neg_var_dict,pHDR_eq_var),dol_lookup(rna_var_dict,pHDR_eq_var)]
 			tHDR_pseudo_reads = [pseudo_reads[0]+pHDR_raw_reads[0],pseudo_reads[1]+pHDR_raw_reads[1],pseudo_reads[2]+pHDR_raw_reads[2],pseudo_reads[3]+pHDR_raw_reads[3],pseudo_reads[4]+pHDR_raw_reads[4]]
-			tHDR_pseudo_freqs = [tHDR_pseudo_reads[0]/pre_var_pseudo_rc,tHDR_pseudo_reads[1]/post_var_pseudo_rc,tHDR_pseudo_reads[2]/lib_var_pseudo_rc,tHDR_pseudo_reads[3]/neg_var_pseudo_rc,tHDR_pseudo_reads[4]/rna_var_pseudo_rc]
-			tHDR_ratios = [tHDR_pseudo_freqs[0]/tHDR_pseudo_freqs[2],tHDR_pseudo_freqs[1]/tHDR_pseudo_freqs[0],tHDR_pseudo_freqs[1]/tHDR_pseudo_freqs[2],tHDR_pseudo_freqs[4]/tHDR_pseudo_freqs[0],tHDR_pseudo_freqs[4]/tHDR_pseudo_freqs[1]]
+			tHDR_pseudo_freqs = [tHDR_pseudo_reads[0]/pre_var_pseudo_rc,tHDR_pseudo_reads[1]/post_var_pseudo_rc,tHDR_pseudo_reads[2]/lib_var_pseudo_rc,tHDR_pseudo_reads[3]/neg_var_pseudo_rc]
+#,tHDR_pseudo_reads[4]/rna_var_pseudo_rc]
+			tHDR_ratios = [tHDR_pseudo_freqs[0]/tHDR_pseudo_freqs[2],tHDR_pseudo_freqs[1]/tHDR_pseudo_freqs[0],tHDR_pseudo_freqs[1]/tHDR_pseudo_freqs[2]]
+#,tHDR_pseudo_freqs[4]/tHDR_pseudo_freqs[0],tHDR_pseudo_freqs[4]/tHDR_pseudo_freqs[1]]
 			outline_data = outline_data + pHDR_raw_reads + tHDR_pseudo_reads + tHDR_pseudo_freqs + tHDR_ratios
 		elif (variant in all_hdr_variants) and not cHDR: #this will carry over the numbers from above for the all_hdr_variants that aren't cHDR
 		#error -- this is carrying numbers over for pHDR variants that will not show up at all in RNA because they don't have a PAM edit in intron.
@@ -490,7 +496,8 @@ for exp in exp_groupings.keys():
 					pHDR_RNA_var = pHDR_RNA_var[:edit_location-1]+ref_base+pHDR_RNA_var[edit_location:] #substitutes in the ref. base at any HDR edit outside of SGE region
 			if pHDR_RNA_var != variant:
 				#print variant, 'variant\n', pHDR_RNA_var, 'pHDR_RNA_var'
-				pHDR_raw_reads = [dol_lookup(pre_var_dict,pHDR_RNA_var),dol_lookup(post_var_dict,pHDR_RNA_var),dol_lookup(lib_var_dict,pHDR_RNA_var),dol_lookup(neg_var_dict,pHDR_RNA_var),dol_lookup(rna_var_dict,pHDR_RNA_var)]
+				pHDR_raw_reads = [dol_lookup(pre_var_dict,pHDR_RNA_var),dol_lookup(post_var_dict,pHDR_RNA_var),dol_lookup(lib_var_dict,pHDR_RNA_var),dol_lookup(neg_var_dict,pHDR_RNA_var)]
+#,dol_lookup(rna_var_dict,pHDR_RNA_var)]
 				tHDR_pseudo_reads = [pseudo_reads[0]+pHDR_raw_reads[0],pseudo_reads[1]+pHDR_raw_reads[1],pseudo_reads[2]+pHDR_raw_reads[2],pseudo_reads[3]+pHDR_raw_reads[3],pseudo_reads[4]+pHDR_raw_reads[4]]
 				tHDR_pseudo_freqs = [tHDR_pseudo_reads[0]/pre_var_pseudo_rc,tHDR_pseudo_reads[1]/post_var_pseudo_rc,tHDR_pseudo_reads[2]/lib_var_pseudo_rc,tHDR_pseudo_reads[3]/neg_var_pseudo_rc,tHDR_pseudo_reads[4]/rna_var_pseudo_rc]
 				tHDR_ratios = [tHDR_pseudo_freqs[0]/tHDR_pseudo_freqs[2],tHDR_pseudo_freqs[1]/tHDR_pseudo_freqs[0],tHDR_pseudo_freqs[1]/tHDR_pseudo_freqs[2],tHDR_pseudo_freqs[4]/tHDR_pseudo_freqs[0],tHDR_pseudo_freqs[4]/tHDR_pseudo_freqs[1]]
@@ -510,10 +517,11 @@ for exp in exp_groupings.keys():
 	pre_threshold = read_threshold*pre_var_rc
 	post_threshold = read_threshold*post_var_rc
 	lib_threshold = read_threshold*lib_var_rc
-	rna_threshold = read_threshold*rna_var_rc
+	#rna_threshold = read_threshold*rna_var_rc
 	variants_above_threshold = 0
 	for variant in exp_variants:
-		if (dol_lookup(pre_var_dict,variant)>pre_threshold) or (dol_lookup(post_var_dict,variant)>post_threshold) or (dol_lookup(lib_var_dict,variant)>lib_threshold) or (dol_lookup(rna_var_dict,variant)>rna_threshold):
+		if (dol_lookup(pre_var_dict,variant)>pre_threshold) or (dol_lookup(post_var_dict,variant)>post_threshold) or (dol_lookup(lib_var_dict,variant)>lib_threshold):
+# or (dol_lookup(rna_var_dict,variant)>rna_threshold):
 			variants_above_threshold +=1
 			output_list = [variant]+[str(i) for i in exp_master_dict[variant]]
 			outfile_open.write('\t'.join(output_list)+'\n')
