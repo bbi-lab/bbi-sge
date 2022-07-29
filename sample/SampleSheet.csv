@@ -1,0 +1,17 @@
+Sample_ID,Sample_Name,Sample_Plate,Sample_Well,Sample_Project,Description,index,index2,GenomeFolder
+PALB2X5Dr1L41-pre,PALB2X5Dr1L41-pre,,,,,ACGCTTGCG,CAGAGTCCG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X5Dr2L41-pre,PALB2X5Dr2L41-pre,,,,,TCGCGCTGC,CAGAGTCCG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X5Dr3L41-pre,PALB2X5Dr3L41-pre,,,,,AGCTGCGCG,CAGAGTCCG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X5Dr1L41-post,PALB2X5Dr1L41-post,,,,,CTGCGACTG,CAGAGTCCG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X5Dr2L41-post,PALB2X5Dr2L41-post,,,,,AACTGACGC,CAGAGTCCG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X5Dr3L41-post,PALB2X5Dr3L41-post,,,,,TGCGCGACT,CAGAGTCCG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X5D-neg,PALB2X5D-neg,,,,,TGCGCTTGA,CAGAGTCCG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X5D-lib,PALB2X5D-lib,,,,,TGCGCGACT,GAGGACGGT,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X11r1L41-pre,PALB2X11r1L41-pre,,,,,ACGCTTGCG,GCTTGTGTG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X11r2L41-pre,PALB2X11r2L41-pre,,,,,TCGCGCTGC,GCTTGTGTG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X11r3L41-pre,PALB2X11r3L41-pre,,,,,AGCTGCGCG,GCTTGTGTG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X11r1L41-post,PALB2X11r1L41-post,,,,,CTGCGACTG,GCTTGTGTG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X11r2L41-post,PALB2X11r2L41-post,,,,,AACTGACGC,GCTTGTGTG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X11r3L41-post,PALB2X11r3L41-post,,,,,TGCGCGACT,GCTTGTGTG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X11-neg,PALB2X11-neg,,,,,TGCGCTTGA,GCTTGTGTG,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
+PALB2X11-lib,PALB2X11-lib,,,,,ACATCGTAG,GAGGACGGT,C:\Illumina\MiSeq Reporter\Genomes\PhiX\Illumina\RTA\Sequence\Chromosomes
