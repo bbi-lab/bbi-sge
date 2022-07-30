@@ -13,12 +13,14 @@ process bcl2fastq {
         path "*"
 
     """
-    bcl2fastq \\
-        -R ${seq_dir} \\
-        -o . \\
-        --sample-sheet ${sample_sheet} \\
-        --interop-dir . \\
-        --no-lane-splitting --use-bases-mask Y*,I*,I*,Y* \\
-        --minimum-trimmed-read-length 0 --mask-short-adapter-reads 0
+    bcl2fastq \
+        -R ${seq_dir} \
+        -o . \
+        --sample-sheet ${sample_sheet} \
+        --interop-dir . \
+        --no-lane-splitting \
+        --use-bases-mask Y*,I*,I*,Y* \
+        --minimum-trimmed-read-length 0 \
+        --mask-short-adapter-reads 0
     """
 }

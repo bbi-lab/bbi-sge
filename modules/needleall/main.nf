@@ -43,7 +43,8 @@ process needleall {
         needleall \
             -asequence $sample_ref \
             -bsequence $sequence_ref \
-            -gapopen 10 -gapextend 0.5 \
+            -gapopen 10 \
+            -gapextend 0.5 \
             -outfile ./${sample_name}.sam \
             -aformat sam 
     done

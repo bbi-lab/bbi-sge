@@ -11,11 +11,13 @@ include { bcl2fastq } from '../modules/bcl2fastq/main.nf'
 ** r1 -
 ** r2 -
 ** detailed in .yaml 
+** link on here or .yaml?
 */
 workflow DEMUX {
     take: 
-        seq_dir
-        sample_sheet
+        seq_dir      // file ( file directory of illumina raw sequences )
+        sample_sheet // file ( .csv of sample_sheet )
+        prefix       // val  ( stored prefix from sampe_sheet )
 
     main: 
         bcl2fastq(seq_dir, sample_sheet)
@@ -24,7 +26,7 @@ workflow DEMUX {
         r2 = bcl2fastq.out.R2
 
     //emit:
-    reads = DEMUX.out.bcl2
+    reads = bcl2
 }
 
 
@@ -32,6 +34,8 @@ workflow DEMUX {
 include { fastqc } from '../modules/fastqc/main.nf'
 /*
 ** raw sequencing fastqc 
+** qc...? 
+** emit required??? only if I will use it...
 */
 workflow DEMUX_QC {
     take: 

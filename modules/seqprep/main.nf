@@ -12,12 +12,17 @@ process seqprep {
     input:
         path R1
         path R2
+        val prefix
 
     output:
         path "*.merge.fastq.gz", emit: merge
         path "*.R1.fastq.gz"
         path "*.R2.fastq.gz"
         path "*.txt"
+
+    script:
+        def foo = R1.collect{"-I $it"}.join(' ')
+        def bar = R2.collect{"-I $it"}.join(' ')
     
     shell:
     '''

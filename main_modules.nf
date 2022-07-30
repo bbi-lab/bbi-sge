@@ -66,10 +66,14 @@ if (params.help) {
 }
 
 
+// raw data -> sam
+include { DEMUX; DEMUX_QC } from './subworkflows/1_demux.nf'                // demux with raw sequence qc
+include { MERGING } from "./subworkflows/2_seqprep.nf"                      // merging with adapter trimming
+include { SEQUENCE_TRIM; RNA_TRIM } from './subworkflows/3_trimming.nf'     // some other trimming - Ns, rna
+include { ALIGNMENT } from './subworkflows/4_alignment.nf'                  // alignment .fastq -> .sam
 
-include { DEMUX; DEMUX_QC } from './subworkflows/1_demux.nf' 
-include { MERGING } from "./subworkflows/2_seqprep.nf" // comment
-
+// data
+include { CIGAR; EDITS; ANNOTATION } from './subworkflows/5_post_alignment' // 
 
 workflow {
 
@@ -82,21 +86,27 @@ workflow {
         reads = bcl2fastq.out.bcl2
         r1 = bcl2fastq.out.R1
         r2 = bcl2fastq.out.R2
+
+        if (params.raw_qc == 'fastqc') {
+            fastqc(reads)
+        }
+
     } else if (!params.seq_dir || !params.sample_sheet || !params.out_dir) {
         exit 1, 
 	    "Must include config file using -c <config name>.config that includes seq_dir, out_dir, and sample_sheet."
     } 
 
-    if (params.qc == 'fastqc') {
-        fastqc(reads)
-    }
 
+// comment out from here; not yet tested, placehodler for now
     if (params.merging == 'seqprep') {
         seqprep(r1, r2)
         merge = seqprep.out.merge
     } else {
         merge = reads
     }
+
+    if (params.)
+
 }
 
 workflow.onComplete {

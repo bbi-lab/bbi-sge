@@ -7,6 +7,8 @@ process fastqc {
 
     """
     fastqc \
-        $bcl2 -o $params.out_dir/bcl2fastq/fastqc_out -t 4
+        $bcl2 \
+        -o $params.out_dir/bcl2fastq/fastqc_out \
+        -t 4
     """
 }
