@@ -70,10 +70,10 @@ if (params.help) {
 include { DEMUX; DEMUX_QC } from './subworkflows/1_demux.nf'                // demux with raw sequence qc
 include { MERGING } from "./subworkflows/2_seqprep.nf"                      // merging with adapter trimming
 include { SEQUENCE_TRIM; RNA_TRIM } from './subworkflows/3_trimming.nf'     // some other trimming - Ns, rna
-include { ALIGNMENT } from './subworkflows/4_alignment.nf'                  // alignment .fastq -> .sam
+//include { ALIGNMENT } from './subworkflows/4_alignment.nf'                  // alignment .fastq -> .sam
 
 // data
-include { CIGAR; EDITS; ANNOTATION } from './subworkflows/5_post_alignment' // 
+//include { CIGAR; EDITS; ANNOTATION } from './subworkflows/5_post_alignment' // 
 
 workflow {
 
@@ -82,13 +82,13 @@ workflow {
     sample_sheet = file( params.sample_sheet )
 
     if (params.demux == 'bcl2fastq') {
-        bcl2fastq(seq_dir, sample_sheet)
+        DEMUX(seq_dir, sample_sheet)
         reads = bcl2fastq.out.bcl2
         r1 = bcl2fastq.out.R1
         r2 = bcl2fastq.out.R2
 
         if (params.raw_qc == 'fastqc') {
-            fastqc(reads)
+            DEMUX_QC(reads)
         }
 
     } else if (!params.seq_dir || !params.sample_sheet || !params.out_dir) {
@@ -99,14 +99,30 @@ workflow {
 
 // comment out from here; not yet tested, placehodler for now
     if (params.merging == 'seqprep') {
-        seqprep(r1, r2)
-        merge = seqprep.out.merge
+        MERGING(r1, r2)
+        merge = MERGING.out.merge
     } else {
         merge = reads
     }
 
-    if (params.)
+    if (params.trimming == 'trimming') {
+        SEQUENCE_TRIM()
+        RNA_TRIM()
+    }
 
+    if (params.alignment == 'needleall') {
+        ALIGNMENT()
+    }
+
+    if (params.post_alignment == 'post_alignment') {
+        if (params.cigar_status == 'true' ) {
+            CIGAR()
+        }
+        if (params.cigar_status == 'true' ) {
+            EDITS()
+        }
+        ANNOTATION()
+    }
 }
 
 workflow.onComplete {

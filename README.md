@@ -2,7 +2,8 @@
     The bioinformatic pipeline for Saturation Genome Editing in Brotman Baty Insitute
 
 ## News
-    0.9.5 - update with csv read
+    0.9.5 - update with csv read  
+    This respitory will replace the original version
 
 ## Documentation
     https://bbi.atlassian.net/wiki/spaces/SGE/pages/274202632/SGE+Pipeline
