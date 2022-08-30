@@ -1,3 +1,5 @@
+# This main branch will be replaced with the module branch in later
+
 # bbi-sge
     The bioinformatic pipeline for Saturation Genome Editing in Brotman Baty Insitute
 
