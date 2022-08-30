@@ -10,14 +10,12 @@ include { seqprep } from '../modules/seqprep/main.nf'
 */
 workflow MERGING {
     take: 
-        R1     // file ( r1 for demux )
-        R2     // file ( r2 for demux)
-        prefix // val  ( stored prefix from sampe_sheet )
+        directory
 
     main: 
-        seqprep(R1, R2)
-        ch_merge = seqprep.out.merge
+        seqprep(directory)
+        merge = seqprep.out.merge
 
-    //emit:
-    reads = ch_merge
+    emit:
+    reads = merge
 }

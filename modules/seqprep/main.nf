@@ -10,9 +10,8 @@ process seqprep {
     afterScript "zgrep -c @${seq_type} *.fastq.gz >> seqprep_read_counts.txt"
 
     input:
-        path R1
-        path R2
-        val prefix
+        path directory
+        //val prefix
 
     output:
         path "*.merge.fastq.gz", emit: merge
@@ -26,16 +25,15 @@ process seqprep {
     
     shell:
     '''
-    for sequences in !{R1}; do
-        index=`echo $sequences | grep -aob '_' | grep -oE '[0-9]+' | head -1`
-        sample_name=${sequences:0:${index}}
+    for sequences in !{directory}; do
         !{projectDir}/SeqPrep/./SeqPrep \
-            -f !{params.out_dir}/bcl2fastq/!{R1} \
-            -r !{params.out_dir}/bcl2fastq/!{R2} \
-            -1 ./${sample_name}.R1.fastq.gz \
-            -2 ./${sample_name}.R2.fastq.gz \
-            -s ./${sample_name}.merge.fastq.gz \
-            -A GGTTTGGAGCGAGATTGATAAAGT -B CTGAGCTCTCTCACAGCCATTTAG \
+            -f !{directory}/*_R1_001.fastq.gz \
+            -r !{directory}/*_R2_001.fastq.gz \
+            -1 ./test.R1.fastq.gz \
+            -2 ./test.R2.fastq.gz \
+            -s ./test.merge.fastq.gz \
+            -A GGTTTGGAGCGAGATTGATAAAGT \
+            -B CTGAGCTCTCTCACAGCCATTTAG \
             -M 0.1 -m 0.001 -q 20 -o 20        
     done
     '''

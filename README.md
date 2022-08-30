@@ -2,11 +2,18 @@
     The bioinformatic pipeline for Saturation Genome Editing in Brotman Baty Insitute
 
 ## News
-    0.9.5 - update with csv read  
-    This respitory will replace the original version
+    0.9.5 - module
+    This module respitory will replace the main respitory in later. 
 
 ## Documentation
-    https://bbi.atlassian.net/wiki/spaces/SGE/pages/274202632/SGE+Pipeline
+    github - documentation link
+
+## Structure
+    main.nf - 
+    subworkflows -
+    modules -
+
+    Details about the subworkflows/modules are in documentation and each subworkflows/modules
 
 ## Installation
 
@@ -65,6 +72,20 @@ Required to load other modules; .bashrc
 
         module load modules modules-init modules-gs  
 
+## Input
+
+samplesheet(.csv)
+sequence(.fastq)
+alignment(.sam)
+
+## Output
+
+fastq
+sequence
+text files
+
+add diagram in here...
+
 ## Extra Features
 Those are implanted features on nextflow that can be useful to run the pipeline.
 
@@ -79,7 +100,7 @@ You can put tagging on the command line to get a notification when you are done
         nextflow run bbi-sge -c <config name> -N <recipient address>  
 
 ## Requirement
-You need a permission on shendure_bbi node.
+Placeholder
 
 ## Dependency
 The script rquires Nextflow version **>=21.10.6**    

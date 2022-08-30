@@ -17,7 +17,7 @@ workflow DEMUX {
     take: 
         seq_dir      // file ( file directory of illumina raw sequences )
         sample_sheet // file ( .csv of sample_sheet )
-        prefix       // val  ( stored prefix from sampe_sheet )
+        //prefix       // val  ( stored prefix from sampe_sheet )
 
     main: 
         bcl2fastq(seq_dir, sample_sheet)
@@ -25,8 +25,10 @@ workflow DEMUX {
         r1 = bcl2fastq.out.R1
         r2 = bcl2fastq.out.R2
 
-    //emit:
+    emit:
     reads = bcl2
+    r1_reads = r1
+    r2_reads = r2
 }
 
 
@@ -44,3 +46,5 @@ workflow DEMUX_QC {
     main: 
         fastqc(reads)
 }
+
+*/
