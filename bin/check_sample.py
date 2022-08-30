@@ -11,20 +11,12 @@ if __name__ == '__main__':
         args = parser.parse_args()
 
 ## 'Sample_ID', 'Sample_Name', 'Sample_Plate', 'Sample_Well', 'Sample_Project', 'Description', 'index', 'index2', 'GenomeFolder'
-data = pd.read_csv(args.path, sep='\t', header=0, low_memory=False)
+data = pd.read_csv(args.path, sep=',', header=0, low_memory=False)
 
-chrome = data[data['Sample_ID'] == args.chr ]
-print ("testing chromosome")
-print (chrome)
+##bcl2 = data[]
+r1 = data[data['fastq_1']]
+print (r1)
 
-'''
-# parsing input of Pos
-pos = data[data['Pos'].between(args.start, args.end)]
-print ("testing positions")
-print (pos)
+r2 = data[data['fastq_2']]
+print (r2)
 
-filtering = data[(data['#Chrom'] == args.chr) & (data['Pos'].between(args.start, args.end))]
-print (filtering)
-
-filtering.to_csv('./test.csv')
-'''

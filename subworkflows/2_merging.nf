@@ -16,8 +16,8 @@ workflow MERGING {
 
     main: 
         seqprep(R1, R2)
-        ch_merge = seqprep.out.merge
+        merge = seqprep.out.merge
 
-    //emit:
-    reads = ch_merge
+    emit:
+    reads = merge
 }
