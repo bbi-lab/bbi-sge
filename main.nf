@@ -3,8 +3,17 @@
 // enable dsl 2 of nextflow 
 nextflow.enable.dsl=2
 
+<<<<<<< HEAD
 // check the version of Nextflow
 // if the condition is not met, exit
+=======
+// need to modulate like QUANTS
+// loading main.nf - *.nf - nf modules
+// or loading main.nf - *.nf with in-script
+// include { bcl2fastq; fastqc } from './demux.nf'
+
+// check the version of Nextflow
+>>>>>>> a67cb4646a10cff2777d53a994273dd9f7c0b94a
 def version() {
     if (!nextflow.version.matches('>=20.04.0')) {
         println "This workflow requires Nextflow version 20.04.0 or greater -- You are running version $nextflow.version"
@@ -13,7 +22,10 @@ def version() {
 }
 
 // check whether user provides the *.config file with directory
+<<<<<<< HEAD
 // if the condition is not met, exit
+=======
+>>>>>>> a67cb4646a10cff2777d53a994273dd9f7c0b94a
 if (!params.seq_dir || !params.out_dir || !params.sample_sheet) {
     exit 1, 
 	"Must include config file using -c <config name>.config that includes seq_dir, out_dir, and sample_sheet."
@@ -87,20 +99,70 @@ include { SEQUENCE_TRIM; RNA_TRIM } from './subworkflows/3_trimming.nf'     // s
 workflow {
 
     // defining the critical inputs
+<<<<<<< HEAD
     seq_dir = file( "${params.out_dir}/bcl2fastq" )
 
     
+=======
+    seq_dir = file( params.seq_dir )
+    sample_sheet = file( params.sample_sheet )
+
+    SAMPLE(seq_dir)
+    
+    if (params.demux == 'bcl2fastq') {
+        DEMUX(seq_dir, sample_sheet)
+        ch_reads = bcl2fastq.out.reads
+        ch_r1 = bcl2fastq.out.reads_r1
+        ch_r2 = bcl2fastq.out.reads_r2
+
+        if (params.raw_qc == 'fastqc') {
+            DEMUX_QC(reads)
+        }
+
+    } else if (!params.seq_dir || !params.sample_sheet || !params.out_dir) {
+        exit 1, 
+	    "Must include config file using -c <config name>.config that includes seq_dir, out_dir, and sample_sheet."
+    } else {
+        ch_r1 = params.sample_sheet row3
+        ch_r2 = params.sample_sheet.splitCsv...(row2)
+    }
+>>>>>>> a67cb4646a10cff2777d53a994273dd9f7c0b94a
 
 
 // comment out from here; not yet tested, placehodler for now
     if (params.merging == 'seqprep') {
+<<<<<<< HEAD
         MERGING(seq_dir)
+=======
+        MERGING(ch_r1, ch_r2)
+>>>>>>> a67cb4646a10cff2777d53a994273dd9f7c0b94a
         merge = MERGING.out.merge
     } else {
         merge = reads
     }
 
+<<<<<<< HEAD
 
+=======
+    if (params.trimming == 'trimming') {
+        SEQUENCE_TRIM()
+        RNA_TRIM()
+    }
+
+    if (params.alignment == 'needleall') {
+        ALIGNMENT()
+    }
+
+    if (params.post_alignment == 'post_alignment') {
+        if (params.cigar_status == 'true' ) {
+            CIGAR()
+        }
+        if (params.cigar_status == 'true' ) {
+            EDITS()
+        }
+        ANNOTATION()
+    }
+>>>>>>> a67cb4646a10cff2777d53a994273dd9f7c0b94a
 }
 
 workflow.onComplete {

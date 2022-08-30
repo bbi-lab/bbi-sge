@@ -45,6 +45,5 @@ workflow DEMUX_QC {
 
     main: 
         fastqc(reads)
+<<<<<<< HEAD
 }
-
-*/

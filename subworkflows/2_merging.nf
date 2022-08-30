@@ -13,8 +13,8 @@ workflow MERGING {
         directory
 
     main: 
-        seqprep(directory)
-        merge = seqprep.out.merge
+        seqprep(R1, R2)
+        ch_merge = seqprep.out.merge
 
     emit:
     reads = merge
