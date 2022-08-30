@@ -53,6 +53,9 @@ if (params.help) {
     exit 1
 }
 
+
+//1. if for raw -> sequences(name) and others
+//2. if for fastq -> sequences + file locations (may be location in later...?)
 process sample_sheet {
 
     output:
